@@ -35,9 +35,10 @@ export default new Router({
       component: Signup
     },
     {
-      path: "/addpost",
+      path: "/post/addpost",
       name: "addpost",
-      component: AddPost
+      component: AddPost,
+      beforeEnter: AuthGuard
     },
     {
       path: "/posts",

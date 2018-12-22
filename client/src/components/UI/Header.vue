@@ -75,7 +75,7 @@ export default {
 			if(this.user){
 				items = [
 					{ icon: 'chat', title: 'Posts', link: '/posts' },
-					{ icon: 'stars', title: 'Create Post', link: '/post/add' }
+					{ icon: 'stars', title: 'Create Post', link: '/post/addpost' }
 				];
 			}
 			return items;

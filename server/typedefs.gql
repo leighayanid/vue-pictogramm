@@ -12,7 +12,7 @@ type Post {
 	_id: ID
 	title: String!
 	imgUrl:  String!
-	categories: [String!]
+	categories: [String]!
 	description: String!
 	createdDate: String
 	likes: Int
@@ -31,13 +31,19 @@ type Token {
 	token: String!
 }
 
+type PostsPage {
+	posts: [Post]
+	hasMore: Boolean
+}
+
 type Query {
 	getCurrentUser: User
 	getPosts: [Post]
+	infiniteScrollPosts(pageNum: Int!, pageSize: Int!): PostsPage
 }
 
 type Mutation {
-	addPost(title: String!, imgUrl: String, categories: [String!], description: String!, creatorId: ID!): Post!
+	addPost(title: String!, imgUrl: String, categories: [String]!, description: String!, creatorId: ID!): Post!
 	signInUser(username: String!, password: String!): Token
 	signUpUser(username: String!, email: String!, password: String!): Token
 }

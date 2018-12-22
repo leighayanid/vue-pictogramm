@@ -11,6 +11,44 @@ export const GET_POSTS = gql`
 	}
 `;
 
+export const INFINITE_SCROLL_POSTS = gql`
+	query($pageNum: Int!, $pageSize: Int!){
+		infiniteScrollPosts(pageNum: $pageNum, pageSize: $pageSize) {
+			hasMore
+			posts {
+				_id
+				title
+				imgUrl
+				categories
+				description
+				likes
+				createdDate
+				messages {
+					_id
+				}
+				createdBy {
+					_id
+					username
+					avatar
+				}
+			}
+		}
+	}
+`;
+
+//POST MUTATION
+export const ADD_POST = gql`
+	mutation($title: String!, $imgUrl: String!, $description: String!, $categories: [String]!, $creatorId: ID!){
+		addPost(title: $title, imgUrl: $imgUrl, description: $description, categories: $categories, creatorId: $creatorId){
+			_id
+			title
+			imgUrl
+			description
+			categories
+		}
+	}
+`;
+
 // USER'S MUTATION
 export const SIGNIN_USER = gql`
 	mutation($username: String!, $password: String!) {
