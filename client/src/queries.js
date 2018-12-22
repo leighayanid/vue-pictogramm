@@ -11,6 +11,30 @@ export const GET_POSTS = gql`
 	}
 `;
 
+export const GET_POST = gql`
+	query($postId: ID!) {
+		getPost(postId: $postId) {
+			_id
+			title
+			imgUrl
+			categories
+			description
+			likes
+			createdDate
+			messages {
+				_id
+				messageBody
+				messageDate
+				messageUser {
+					_id
+					username
+					avatar
+				}
+			}
+		}
+	}
+`;
+
 export const INFINITE_SCROLL_POSTS = gql`
 	query($pageNum: Int!, $pageSize: Int!){
 		infiniteScrollPosts(pageNum: $pageNum, pageSize: $pageSize) {

@@ -6,11 +6,13 @@
 	        <v-card-media
 	          height="30vh"
 	          :src="post.imgUrl"
+	          @click.native="goToPost(post._id)"
 	          lazy>
 	        </v-card-media>
 	        <v-card-actions>  
 	        	<v-card-title primary>
 	        	 <div class="headline">{{ post.title }}</div>
+	        	 <v-spacer></v-spacer>
 	        	 <span class="grey--text">{{ post.likes }} likes - {{ post.messages.length }} comments</span>
 	        	</v-card-title>
 	        	<v-spacer></v-spacer>
@@ -95,7 +97,10 @@ const pageSize = 2;
 						}
 					}
 				});
-			}
-		}
+			},
+			goToPost(postId){
+	      this.$router.push(`/posts/${postId}`);
+	    }
+		},
 	};
 </script>
