@@ -45,6 +45,7 @@ type Query {
 
 type Mutation {
 	addPost(title: String!, imgUrl: String, categories: [String]!, description: String!, creatorId: ID!): Post!
+	addPostMessage(messageBody: String, userId: ID!, postId: ID!): Message!
 	signInUser(username: String!, password: String!): Token
 	signUpUser(username: String!, email: String!, password: String!): Token
 }

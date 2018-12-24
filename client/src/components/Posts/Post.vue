@@ -19,14 +19,12 @@
               slot="activator"
               :src="getPost.imgUrl"
               id="post__image"
+              height="60vh"
 			  	  >
 			  	  </v-card-media>
 			  	</v-tooltip>
 			  	<v-dialog
 			  	  v-model="dialog"
-			  	  scrollable fullscreen 
-			  	  persistent :overlay="false"
-			  	  max-width="500px"
 			  	  transition="dialog-transition"
 			  	>
 			  	  <v-card>
@@ -46,49 +44,142 @@
 	      </v-card>
 	    </v-flex>
 	  </v-layout>
+	  <!-- message form -->
+	  <div class="mt-3">
+	  	<v-layout class="mb-3" v-if="user">
+	  	  <v-flex xs12>
+	  	    <v-form v-model="isFormValid" lazy-validation ref="form" @submit.prevent="handleAddPostMessage">
+	  	      <v-layout row wrap>
+	  	        <v-flex xs12>
+	  	          <v-text-field
+	  	          	v-model="messageBody"
+	  	          	@click:append-outer="handleAddPostMessage"
+	  	            clearable
+	  	            :append-outer-icon="messageBody && 'send'"
+	  	            type="text"
+	  	            prepend-icon="email"
+	  	            required
+	  	            label="Add message"
+	  	            id="id"
+	  	            :rules="messageRules"
+	  	          ></v-text-field>
+	  	        </v-flex>
+	  	      </v-layout>
+	  	    </v-form>
+	  	  </v-flex>
+	  	</v-layout>
+	  	<!-- messages list -->
+	  	<v-layout row wrap>
+	  	  <v-flex xs12>
+	  	    <v-list subheader two-line>
+	  	      <v-subheader>Messages ({{ getPost.messages.length }})</v-subheader>
+	  	      <template v-for="message in getPost.messages">
+	  	      	<v-divider :key="message._id"></v-divider>
+	  	      	<v-list-tile avatar inset :key="message.title">
+	  	      	  <v-list-tile-avatar>
+	  	      	    <img :src="message.messageUser.avatar">
+	  	      	  </v-list-tile-avatar>
+	  	      	  <v-list-tile-content> 
+		  	      	  <v-list-tile-title>{{ message.messageBody }}</v-list-tile-title>
+		  	      	  <v-list-tile-sub-title>
+		  	      	  	{{ message.messageUser.username }}
+		  	      	  	<span class="grey--text text--lighten-1 hidden-xs-only">{{ message.messageDate }}</span>
+		  	      		</v-list-tile-sub-title>
+	  	      	  </v-list-tile-content>
+	  	      	  <v-list-tile-action class="hidden-xs-only">
+	  	      	    <v-icon :color="checkIfOwnMessage(message) ? 'accent' : 'grey'">chat_bubble</v-icon>
+	  	      	  </v-list-tile-action>
+		  	      </v-list-tile>
+	  	      </template>
+	  	    </v-list>
+	  	  </v-flex>
+	  	</v-layout>
+	  </div>
 	</v-container>
 </template>
 
 <script>
-import { GET_POST } from '../../queries';
+import { GET_POST, ADD_POST_MESSAGE } from '../../queries';
 import { mapGetters } from 'vuex';
 
-	export default{
-		name: "Post",
-		props: ["postId"],
-		data() {
-			return {
-				dialog: false
-			}
-		},
-		apollo: {
-			getPost: {
-				query: GET_POST,
-				variables() {
-					return {
-						postId: this.postId
-					}
-				}
-			}
-		},
-		computed: {
-			...mapGetters(["user"])
-		},
-		methods: {
-			goToPreviousPage() {
-				this.$router.go(-1);
-			},
-			toggleImageDialog() {
-				if(window.innerWidth > 500){
-					this.dialog = !this.dialog;
+export default{
+	name: "Post",
+	props: ["postId"],
+	data() {
+		return {
+			dialog: false,
+			messageBody:  '',
+			isFormValid: true,
+			messageRules: [
+				message => !!message || 'Message is required.',
+				message => message.length < 50 || 'Message must not be less than 50 characters.',
+				message => 
+			]
+		}
+	},
+	apollo: {
+		getPost: {
+			query: GET_POST,
+			variables() {
+				return {
+					postId: this.postId
 				}
 			}
 		}
+	},
+	computed: {
+		...mapGetters(["user"])
+	},
+	methods: {
+		goToPreviousPage() {
+			this.$router.go(-1);
+		},
+		toggleImageDialog() {
+			if(window.innerWidth > 500){
+				this.dialog = !this.dialog;
+			}
+		},
+		handleAddPostMessage() {
+			if(this.$refs.form.validate()){
+				const variables = {
+					messageBody: this.messageBody,
+					userId: this.user._id
+					postId: this.postId
+				}
+				this.$apollo.mutate({
+					mutation: ADD_POST_MESSAGE,
+					variables,
+					updates: (cache, { data: { addPostMessage } }) => {
+						const data = cache.readQuery({
+							query: GET_POST,
+							variables: { postId: this.postId }
+						});
+						// console.log('data', data);
+						// console.log("add post messasge", addPostMessage)
+						data.getPosts.messages.unshift(addPostMessage);
+						cache.writeQuery({
+							query: GET_POST,
+							variables: { postId: this.postId },
+							data
+						})
+					}
+				}).then(( { data }) => {
+					this.$refs.form.reset();
+					console.log(data.addPostMessage)
+				}).catch(err => {
+					console.error(err);
+				});
+			}
+		},
+		checkIfOwnMessage(message){
+			return this.user && this.user._id === message.messageUser._id;
+		}
 	}
+}
 </script>
 
 <style scoped>
-#post__image{
+#post__image {
 	height: 400px important!
 }
 </style>
