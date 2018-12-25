@@ -42,8 +42,8 @@
 		  	<!-- profile -->
 		  	<v-btn color="success" flat to="/profile" v-if="user">
 		  		<v-icon class="hidden-sm-only">account_box</v-icon>
-		  		<v-badge right color="primary">
-		  		  <span slot="badge">1</span> <!--slot can be any component-->
+		  		<v-badge right color="primary" :class="{ 'bounce': badgeAnimated }">
+		  		  <span slot="badge" v-if="userFavorites.length">{{ userFavorites.length }}</span> <!--slot can be any component-->
 		  		  Profile
 		  		</v-badge>
 		  	</v-btn>
@@ -61,11 +61,12 @@ import { mapGetters } from 'vuex';
 export default {
 	data() {
 		return {
-			sideNav: false
+			sideNav: false,
+			badgeAnimated: false
 		}
 	},
 	computed: {
-		...mapGetters(["user"]),
+		...mapGetters(["user", "userFavorites"]),
 		links() {
 			let items = [
 				{ icon: 'chat', title: 'Posts', link: '/posts' },
@@ -88,6 +89,51 @@ export default {
 		signout() {
 			this.$store.dispatch('signOutUser');
 		}
+	},
+	watch: {
+		userFavorites(value) {
+			if(value){
+				this.badgeAnimated = true;
+				setTimeOut(() => (this.badgeAnimated = false), 1000);
+			}
+		}
 	}
 };
 </script>
+
+<style scoped>
+	.bounce{
+		animation: bounce 1s both;
+	}
+
+	@keyframes bounce {
+		0%, 20%, 50%, 80%, 100% {
+			-webkit-transform: translate3d(0,0,0);
+			   -moz-transform: translate3d(0,0,0);
+			    -ms-transform: translate3d(0,0,0);
+			     -o-transform: translate3d(0,0,0);
+			        transform: translate3d(0,0,0);
+		}
+		40%, 43% {
+			-webkit-transform: translate3d(0,-20px,0);
+		   -moz-transform: translate3d(0,-20px,0);
+		    -ms-transform: translate3d(0,-20px,0);
+		     -o-transform: translate3d(0,-20px,0);
+		        transform: translate3d(0,-20px,0);
+		}
+		70% {
+			-webkit-transform: translate3d(0,-10px,0);
+		   -moz-transform: translate3d(0,-10px,0);
+		    -ms-transform: translate3d(0,-10px,0);
+		     -o-transform: translate3d(0,-10px,0);
+		        transform: translate3d(0,-10px,0);
+		}
+		90% {
+			-webkit-transform: translate3d(0,-4px,0);
+		   -moz-transform: translate3d(0,-4px,0);
+		    -ms-transform: translate3d(0,-4px,0);
+		     -o-transform: translate3d(0,-4px,0);
+		        transform: translate3d(0,-4px,0);
+		}
+	}
+</style>
