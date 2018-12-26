@@ -32,7 +32,7 @@
 		  	<router-link to="/" tag="span" style="cursor: pointer">Vue Pictogramm</router-link>
 		  </v-toolbar-title>
 		  <v-spacer></v-spacer>
-		  <v-text-field flex dark prepend-icon="search" placeholder="Search posts" color="accent" single-line hide-details></v-text-field>
+		  <v-text-field v-model="searchTerm" @input="handleSearchPosts" flex dark prepend-icon="search" placeholder="Search posts" color="accent" single-line hide-details></v-text-field>
 		  <v-spacer></v-spacer>
 		  <v-toolbar-items class="hidden-xs-only">
 		  	<v-btn flat v-for="item in links" :key="item.title" color="secondary" :to="item.link">
@@ -54,6 +54,20 @@
 		  	</v-btn>
 		  </v-toolbar-items>
 		</v-toolbar>
+
+		<!-- SEARCH RESULTS -->
+		<v-card dark v-if="searchResults.length" id="card__search">
+		  <v-list>
+			    <v-list-tile v-for="result in searchResults" :key="result._id" @click="goToSearchResult(result._id)">
+			      <v-list-tile-title>{{ result.title }}</v-list-tile-title>
+			      <span class="font-weight-thin">{{ formatDescription(result.description) }}</span>
+			      <!-- show icon if favorited by user -->
+				    <v-list-tile-action v-if="checkIfUserFavorite(result._id)">
+				 			 <v-icon>favorite</v-icon>
+				    </v-list-tile-action>
+		    </v-list-tile>
+		  </v-list>
+		</v-card>
 	</div>
 </template>
 <script>
@@ -62,11 +76,12 @@ export default {
 	data() {
 		return {
 			sideNav: false,
-			badgeAnimated: false
+			badgeAnimated: false,
+			searchTerm: ''
 		}
 	},
 	computed: {
-		...mapGetters(["user", "userFavorites"]),
+		...mapGetters(["user", "userFavorites", "searchResults"]),
 		links() {
 			let items = [
 				{ icon: 'chat', title: 'Posts', link: '/posts' },
@@ -88,6 +103,22 @@ export default {
 		},
 		signout() {
 			this.$store.dispatch('signOutUser');
+		},
+		handleSearchPosts(){
+			this.$store.dispatch('searchPosts', {
+				searchTerm: this.searchTerm
+			});
+		},
+		goToSearchResult(id){
+			this.searchTerm = '';
+			this.$router.push(`/posts/${id}`);
+			this.$store.commit('clearSearchResults');
+		},
+		formatDescription(description){
+			return description.length > 20 ? `${description.slice(0, 20)}...` : description;
+		},
+		checkIfUserFavorite(resultId) {
+			return this.userFavorites && this.userFavorites.some(fave => fave._id === resultId);
 		}
 	},
 	watch: {
@@ -104,6 +135,14 @@ export default {
 <style scoped>
 	.bounce{
 		animation: bounce 1s both;
+	}
+
+	#card__search {
+		position: absolute;
+		width: 100vw;
+		z-index: 8;
+		top: 10%;
+		left: 0%;
 	}
 
 	@keyframes bounce {

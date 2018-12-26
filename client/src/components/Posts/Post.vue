@@ -110,7 +110,7 @@ export default{
 			dialog: false,
 			messageBody:  '',
 			isFormValid: true,
-			isLiked: false,
+			postLiked: false,
 			messageRules: [
 				message => !!message || 'Message is required.',
 				message => message.length < 50 || 'Message must not be less than 50 characters.' 
@@ -194,14 +194,14 @@ export default{
 							data
 						});
 					}
-				}).populate(({ data }) => {
+				}).then(({ data }) => {
 					// console.log('user', this.user);
 					// console.log('likePost', data.likePost);
 					const updatedUser = { ...this.user, favorites: data.likePost.favorites };
-					this.$store.dispatch('setUser', updatedUser);
+					this.$store.commit('setUser', updatedUser);
 				}).catch(err => {
 					console.error(err);
-				});
+				}); 
 			},
 			handleUnlikePost(){
 				const variables = {
@@ -223,11 +223,11 @@ export default{
 							data
 						});
 					}
-				}).populate(({ data }) => {
+				}).then(({ data }) => {
 					// console.log('user', this.user);
 					// console.log('likePost', data.likePost);
 					const updatedUser = { ...this.user, favorites: data.unlikePost.favorites };
-					this.$store.dispatch('setUser', updatedUser);
+					this.$store.commit('setUser', updatedUser);
 				}).catch(err => {
 					console.error(err);
 				});
@@ -236,16 +236,16 @@ export default{
 				if (this.postLiked) {
 					this.handleUnlikePost();
 				} else {
-					this.handleLikePost();
+					this.	handleLikePost();
 				}
 			},
 			checkIfPostLiked(postId){
 				//checkif user favorites inlcude post with id of postId
 				if (this.userFavorites && this.userFavorites.some(fave => fave._id === postId)){
-					this.isLiked = true;
+					this.postLiked = true;
 					return true;
 				} else {
-					this.isLiked = false;
+					this.postLiked = false;
 					return false;
 				}
 			}

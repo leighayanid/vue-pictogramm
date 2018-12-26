@@ -60,6 +60,18 @@ export const INFINITE_SCROLL_POSTS = gql`
 	}
 `;
 
+export const SEARCH_POSTS = gql`
+	query($searchTerm: String) {
+		searchPosts(searchTerm: $searchTerm){
+			_id
+			title
+			imgUrl
+			description
+			likes
+		}
+	}
+`;
+
 //POST MUTATION
 export const ADD_POST = gql`
 	mutation($title: String!, $imgUrl: String!, $description: String!, $categories: [String]!, $creatorId: ID!){
