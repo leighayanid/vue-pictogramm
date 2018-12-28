@@ -47,7 +47,7 @@ import { mapGetters } from 'vuex';
     watch: {
       user(newValue, oldValue){
         if(oldValue === null){
-          this.authSnackbar = true;
+          this.authSnackbar = false;
         }
       },
       authError(value){
