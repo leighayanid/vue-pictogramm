@@ -9,7 +9,7 @@
     "dev": "concurrently --names \"server,client\" \"npm run server --silent\" \"npm run client --silent\""
   },
   "keywords": [],
-  "author": "Reed Barger",
+  "author": "Leigh Dinaya",
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^2.0.0-rc.7",

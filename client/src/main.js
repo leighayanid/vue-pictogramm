@@ -17,10 +17,11 @@ Vue.use(VueApollo);
 
 //setup apollo client
 export const defaultClient = new ApolloClient({
-	uri: "http://localhost:4000/",
+	uri: "https://fullstack-vue-graphql-starter-bxcfnsjjrk.now.sh/graphql",
 	//include auth token with request we made to backend
 	fetchOptions: {
-		credentials: 'include'
+		credentials: 'include',
+		mode: 'no-cors'
 	},
 	request: operation => {
 		//if no token with key of 'token' in localstorage, add it

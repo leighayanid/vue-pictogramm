@@ -1,0 +1,17 @@
+{
+  "name": "vue-pictogramm",
+  "type": "static",
+  "static": {
+    "public": "dist",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "alias": "vue-pictogramm",
+  "files": [
+    "dist"
+  ]
+}
