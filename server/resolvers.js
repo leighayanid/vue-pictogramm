@@ -25,6 +25,12 @@ module.exports = {
 			});
 			return posts;
 		},
+		getUserPosts: async(_, { userId }, { Post }) => {
+			const posts = await Post.find({
+				createdBy: userId
+			});
+			return posts;
+		},
 		getPost: async (_, { postId }, { Post }) => {
 			const post = await Post.findOne({ _id: postId }).populate({
 				path: 'messages.messageUser',
@@ -119,6 +125,18 @@ module.exports = {
 				model: 'User'
 			});
 			return post.messages[0];
+		},
+		updateUserPost: async (_, { postId, userId, title, imgUrl, categories, description }, { Post }) => {
+			const post = await Post.findOneAndUpdate(
+				{	_id: postId, createdBy: userId },
+				{ $set: { title, imgUrl, categories, description } },
+				{ new: true }
+			);
+			return post;
+		},
+		deleteUserPost: async (_, { postId }, { Post }) => {
+			const post = await Post.findOneAndRemove({ _id: postId });
+			return post;
 		},
 		likePost: async (_, { postId, username }, { Post, User }) => {
 			//find post, add 1 to its like value

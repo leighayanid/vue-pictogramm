@@ -35,6 +35,20 @@ export const GET_POST = gql`
 	}
 `;
 
+export const GET_USER_POSTS = gql`
+	query($userId: ID!) {
+		getUserPosts(userId: $userId) {
+			_id
+			title
+			imgUrl
+			description
+			categories
+			createdDate
+			likes
+		}
+	}
+`;
+
 export const INFINITE_SCROLL_POSTS = gql`
 	query($pageNum: Int!, $pageSize: Int!){
 		infiniteScrollPosts(pageNum: $pageNum, pageSize: $pageSize) {
@@ -81,6 +95,32 @@ export const ADD_POST = gql`
 			imgUrl
 			description
 			categories
+		}
+	}
+`;
+
+export const UPDATE_USER_POST = gql`
+	mutation($postId: ID!, $userId: ID!, $title: String!, $imgUrl: String!, $categories: [String]!, $description: String!){
+		updateUserPost(postId: $postId, userId: $userId, title: $title, imgUrl: $imgUrl, categories: $categories, description: $description){
+			_id
+			title
+			imgUrl
+			categories
+			description
+			createdDate
+			likes
+			createdBy {
+				_id
+				avatar
+			}
+		}
+	}
+`;
+
+export const DELETE_USER_POST = gql`
+	mutation($postId: ID!) {
+		deleteUserPost(postId: $postId) {
+			_id
 		}
 	}
 `;
